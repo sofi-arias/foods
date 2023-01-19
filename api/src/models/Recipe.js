@@ -4,10 +4,10 @@ const { DataTypes } = require('sequelize');
 module.exports = (sequelize) => {
   // defino el modelo
   sequelize.define('recipe', {
-    id: {
+    id:{
       type: DataTypes.UUID, // para que no se repita con el de la API
       defaultValue: DataTypes.UUIDV4,
-      allowNull: false, // no permite que esté vacio
+      // allowNull: false, // no permite que esté vacio
       primaryKey: true
     },
     name: {
@@ -21,6 +21,10 @@ module.exports = (sequelize) => {
     healthscore: {
       type: DataTypes.INTEGER,
     },
+    image: {
+      type: DataTypes.STRING,
+      defaultValue:'https://cdn.pixabay.com/photo/2014/12/21/23/28/recipe-575434_640.png'
+    },
     steps: {
       type: DataTypes.ARRAY(DataTypes.STRING)
     },
@@ -30,5 +34,5 @@ module.exports = (sequelize) => {
     }   
   },{
     timestamps: false
-  });
+});
 };

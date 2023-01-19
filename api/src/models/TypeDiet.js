@@ -12,7 +12,16 @@ module.exports = (sequelize) => {
     },
     name: {
       type: DataTypes.STRING
-      // type: DataTypes.ENUM("gluten free","dairy free","paleolithic", "lacto ovo vegetarian","primal","whole 30","fodmap friendly", "ketogenic","pescatarian", "vegan")
+      // type: DataTypes.ENUM("gluten free",
+      // "dairy free",
+      // "paleolithic",
+      // "lacto ovo vegetarian",
+      // "primal",
+      // "whole 30",
+      // "fodmap friendly",
+      // "ketogenic",
+      // "pescatarian",
+      // "vegan")
     }
     
   },{

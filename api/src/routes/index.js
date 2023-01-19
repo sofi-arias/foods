@@ -1,7 +1,7 @@
 const { Router } = require('express');
-const axios = require('axios');
 const { Recipe, TypeDiet } = require('../db');
-const e = require('express');
+const { getALLRecipes } = require("../controllers/recipe")
+
 // Importar todos los routers;
 // Ejemplo: const authRouter = require('./auth.js');
 
@@ -10,61 +10,91 @@ const router = Router();
 // Configurar los routers
 // Ejemplo: router.use('/auth', authRouter);
 
-const getApiInfo = async () => {
-    const apiUrl = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${YOUR_API_KEY}&addRecipeInformation=true&number=100`);
-    const apiInfo = await apiUrl.data.map(el => {
-      return {
-        id: el.id,
-        title: el.title,      
-        img: el.img,
-        typeDiets: el.diets.map((d)=>{
-            return { name: d};
-        }), // array con tipos de dietas
-        spoonacularScore: el.spoonacularScore, //puntuacion
-        dishTypes: el.dishTypes.map((d) => {
-            return { name: d} ;
-        }), // tipo de plato
-        summary: el.summary, // resumen del plato
-        healthScore: el.healthScore, // que tan saludable es
-        analyzedInstructions : el.analyzedInstructions, // paso a paso de como se hace
-      };
-    });
-    return apiInfo;
-  }
-const getDbInfo = async () => {
-    return await Recipe.findAll({
-        include: {
-            model: TypeDiet,
-            attributes: ['name'],
-            through: {
-                attributes: []
-            }
-        }
-    })
-};
-  
-const getAllRecipes = async () => {
-    const apiInfo = await getApiInfo();
-    const dbInfo = await getDbInfo();
-    const infoTotal = apiInfo.concat(dbInfo);
-    return infoTotal;
-}
+router.get("/", async (req, res) => {
 
-router.get('/recipes', async (req, res) => {
-    const name = req.query.name;
-    let recipesTotal = await getAllRecipes();
-    // includes(name) --> name es lo que le paso por el query
-    //el.name.toLowerCase() es la parte de la api walter y .includes(name.toLowerCase()) es para comparar como una busqueda más global.
-    if (name) {
-      let recipeName = await recipesTotal.filter(el => el.name.toLowerCase().includes(name.toLowerCase()));
-      recipeName.length ? res.status(200).send(recipeName) : res.status(404).send('No está la receta');
-    } else {
-      res.status(200).send(recipesTotal)
-    }
+  const { name } = req.query;
+  let allInfo = await getALLRecipes();
+  
+  if (name) {
+      try {
+      let filteredRecipe = await allInfo.filter((e) =>
+          e.name.toLowerCase().includes(name.toLowerCase())
+      );
+      filteredRecipe.length
+          ? res.status(200).send(filteredRecipe)
+          : res.status(404).send("Não achamos receita com esse nome");
+      } catch (error) {
+      return res.status(400).send("Deu errado");
+      }
+  } else {
+      res.send(allInfo);
+  }
+  });
+
+
+
+
+router.get("/:id", async (req, res) => {
+
+  try {
+      const { id } = req.params;
+      const recipesTotal = await getALLRecipes();
+      if (id) {
+          let recipeId = await recipesTotal.filter((r) => r.id == id);
+          if(recipeId.length) res.status(200).json(recipeId)  
+  } }catch (error) {
+      res.status(404).send(error,"Não achamos essa receita");
+  }
+  
+  
+  
 });
 
- 
-  
-  
- 
-  module.exports = router;
+
+router.get("/", async (req, res) => {
+  let types = [
+      "gluten free",
+      "dairy free",
+      "paleolithic",
+      "lacto ovo vegetarian",
+      "primal",
+      "whole 30",
+      "fodmap friendly",
+      "ketogenic",
+      "pescatarian",
+      "vegan"
+  ]
+  types.forEach(async (e)=> {
+      await TypeDiet.findOrCreate({
+          where: { name: e }
+      })
+  });
+  let result = await TypeDiet.findAll()
+  return res.send(result)
+});
+
+
+router.post("/", async(req,res) => {
+  let{ name, summary, healthscore, steps, diets, image, dishtypes } = req.body
+  try {
+      let recipeCreated = await Recipe.create({
+          name,
+          summary,
+          healthscore,
+          image: image?image:'https://cdn.pixabay.com/photo/2014/12/21/23/28/recipe-575434_640.png',
+          steps,
+          dishtypes
+      });
+      
+      const typediet = await TypeDiet.findAll({
+          where: {name: diets}
+      });
+      await recipeCreated.addTypeDiet(typediet)
+      res.status(200).send(recipeCreated)
+  } catch (error) {
+      res.status(404).send(error)
+  }
+})
+
+
+module.exports = router;
