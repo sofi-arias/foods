@@ -10,7 +10,8 @@ const router = Router();
 // Configurar los routers
 // Ejemplo: router.use('/auth', authRouter);
 
-router.get("/", async (req, res) => {
+
+router.get("/recipes", async (req, res) => {
 
   const { name } = req.query;
   let allInfo = await getALLRecipes();
@@ -22,9 +23,9 @@ router.get("/", async (req, res) => {
       );
       filteredRecipe.length
           ? res.status(200).send(filteredRecipe)
-          : res.status(404).send("Não achamos receita com esse nome");
+          : res.status(404).send("No pudimos encontrar una receta con ese nombre");
       } catch (error) {
-      return res.status(400).send("Deu errado");
+      return res.status(400).send("Error");
       }
   } else {
       res.send(allInfo);
@@ -34,7 +35,7 @@ router.get("/", async (req, res) => {
 
 
 
-router.get("/:id", async (req, res) => {
+router.get("/recipes/:id", async (req, res) => {
 
   try {
       const { id } = req.params;
@@ -43,7 +44,7 @@ router.get("/:id", async (req, res) => {
           let recipeId = await recipesTotal.filter((r) => r.id == id);
           if(recipeId.length) res.status(200).json(recipeId)  
   } }catch (error) {
-      res.status(404).send(error,"Não achamos essa receita");
+      res.status(404).send(error,"No pudimos encontrar esta receta");
   }
   
   
@@ -51,7 +52,7 @@ router.get("/:id", async (req, res) => {
 });
 
 
-router.get("/", async (req, res) => {
+router.get("/diets", async (req, res) => {
   let types = [
       "gluten free",
       "dairy free",
@@ -74,7 +75,7 @@ router.get("/", async (req, res) => {
 });
 
 
-router.post("/", async(req,res) => {
+router.post("/recipes", async(req,res) => {
   let{ name, summary, healthscore, steps, diets, image, dishtypes } = req.body
   try {
       let recipeCreated = await Recipe.create({
