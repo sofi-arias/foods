@@ -17,7 +17,7 @@ export default function Home() {
     const loader = useSelector(state => state.loader)
 
     const [currentPage, setCurrentPage] = useState(1)
-    const [ setOrden] = useState('')
+    const [ orden, setOrden] = useState('')
 
 
     const recipesPerPage = 9;
@@ -29,9 +29,9 @@ export default function Home() {
         setCurrentPage(pageNumber)
     }
 
-    useEffect(() => {
+    useEffect(async () => {
         dispatch(Loading());
-        dispatch(getRecipes());
+        await dispatch(getRecipes());
         dispatch(getDiets());
         dispatch(Loading());
     }, [dispatch])
