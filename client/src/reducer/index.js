@@ -3,7 +3,7 @@ const initialState = {
     recipes: [],
     recipeByID: {},
     diets:[],
-    loader: true,
+    loader: false,
 }
 
 
@@ -95,17 +95,9 @@ function rootReducer(state = initialState, action) {
             }
         case 'LOADER':
             const loader = state.loader
-            if (loader === true) {
                 return {
                     ...state,
-                    loader: false,
-                }
-            } else {
-                return {
-                    ...state,
-                    loader: true,
-                }
-
+                    loader: action.payload,
             }
         default:
             return state;

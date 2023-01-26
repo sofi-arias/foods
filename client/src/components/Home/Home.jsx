@@ -1,13 +1,18 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+
 import { getRecipes, filterByDiets, getDiets, orderByName, orderByHS, Loading } from '../../actions';
+
 import { Link } from 'react-router-dom';
+
 import Loader from '../Loader/Loader';
 import Card from '../Card/Card';
 import Paginado from '../Paginado/Paginado';
 import SearchBar from '../SearchBar/SearchBar';
+
 import './Home.css'
+
 
 export default function Home() {
 
@@ -17,7 +22,7 @@ export default function Home() {
     const loader = useSelector(state => state.loader)
 
     const [currentPage, setCurrentPage] = useState(1)
-    const [ orden, setOrden] = useState('')
+    const [orden, setOrden] = useState('')
 
 
     const recipesPerPage = 9;
@@ -29,11 +34,10 @@ export default function Home() {
         setCurrentPage(pageNumber)
     }
 
-    useEffect(async () => {
-        dispatch(Loading());
-        await dispatch(getRecipes());
+    useEffect(() => {
+        dispatch(Loading(true));
+        dispatch(getRecipes()).then(()=> dispatch(Loading(false)))
         dispatch(getDiets());
-        dispatch(Loading());
     }, [dispatch])
 
 
@@ -66,7 +70,7 @@ export default function Home() {
         dispatch(orderByHS(e.target.value))
         setOrden(`Ordenado ${e.target.value}`)
     }
-    if (loader === true) {
+    if (loader) return <Loader/> 
         return (
             <div className='main'>
                 <div className="buttontopcont">
@@ -118,12 +122,5 @@ export default function Home() {
                     allRecipes={allRecipes.length}
                     paginado={paginado} />
             </div>
-        )
-    } else {
-        return (
-            <Loader />
-        )
-
-
-    }
+        ) 
 }

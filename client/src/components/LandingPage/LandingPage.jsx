@@ -8,7 +8,7 @@ export default function LandingPage() {
             <div className="contlanding">
                 <h1>PI FOOD HENRY - Sofia Arias</h1>
                 <Link to='/home'>
-                    <button className="enterbutton">ENTRAR</button>
+                    <button className="enterbutton">INGRESAR FOOD API</button>
                 </Link>
             </div>
         </div>
