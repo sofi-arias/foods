@@ -17,13 +17,12 @@ function Detail() {
     
 
 
-    useEffect(async () => {
-        dispatch(Loading());
-        await dispatch(getRecipebyID(id));
-        dispatch(Loading());
+    useEffect(() => {
+        dispatch(Loading(true));
+        dispatch(getRecipebyID(id)).then(()=>dispatch(Loading(false)))
     }, [dispatch]);
 
-    if (loader === true && recetas[0] && recetas[0].id == id) {
+    if (loader === false && recetas[0] && recetas[0].id == id) {
         return (
             <div className='detailscontainer' >
                 <div className='botondevolver'>

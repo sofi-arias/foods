@@ -82,7 +82,7 @@ router.post("/recipes", async(req,res) => {
           name,
           summary,
           healthscore,
-          image: image?image:'https://cdn.pixabay.com/photo/2014/12/21/23/28/recipe-575434_640.png',
+          image: image?image:'https://as1.ftcdn.net/v2/jpg/00/72/21/26/1000_F_72212653_QvOxnmRuncbq0MRCKem7h4kU3BNwCCJT.jpg',
           steps,
           dishtypes
       });
